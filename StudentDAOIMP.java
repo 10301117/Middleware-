@@ -1,46 +1,98 @@
-package DAO;
+package daoIMP;
 
-import javax.sql.DataSource;
-import java.util.List;
+import bean.Student;
+import dao.StudentDAO;
+import java.sql.*;
+
+import connection.DataBaseConnection;
 
 public class StudentDAOIMP implements StudentDAO{
-    private DataSource dataSource;
-    private JdbcTemplate jdbcTemplate;
-
-    public void setdatasource(DataSource ds) {
-        this.dataSource = ds;
-        this.jdbcTemplate = new JdbcTemplate(ds);
+    
+    public void update(Student s) {
+        String sql = "update Student set name=? where id=?";
+        PreparedStatement pstmt = null;
+        DataBaseConnection conn = null;
+        try{
+            conn = new DataBaseConnection();
+            
+            pstmt = conn.getConnection().prepareStatement(sql);
+            pstmt.setLong(1,s.getName());
+            pstmt.setString(2,s.getID());
+            
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }
     }
-
-    @Override
-    public void insertStu(Student s){
-        String sql = "insert into Student([ID],[name]) values (?,?)";
-        jdbcTemplate.insert(sql,s.getId(),s.getName());
-    }
-
-    @Override
-    public void deleteStu(Student s) {
+    
+    public void delete(String iD) {
         String sql = "delete from Student where ID=?";
-        jdbcTemplate.delete(sql,s.getId());
+        PreparedStatement pstmt = null;
+        DataBaseConnection conn = null;
+        try{
+            conn = new DataBaseConnection();
+            
+            pstmt = conn.getConnection().prepareStatement(sql);
+            pstmt.setString(1,s.getID());
+            
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        }
+        catch(Exception e){}
     }
-
-    @Override
-    public void updateStu(Student s) {
-        String sql = "update Student set name=? where ID=?";
-        jdbcTemplate.update(sql,s.getName(),s.getId());
-    }
-
-    @Override
-    public Student findStuByID(String id) {
+    
+    public List<Student> findAll() {
         String sql = "select * from Student where ID=?";
-        List<Student> list= jdbcTemplate.query(sql,id,new StudentMapper());
+        List<Student> list = null;
+        PreparedStatement pstmt = null;
+        DataBaseConnection conn = null;
+        ResultSet rs = null;
+        try{
+            conn = new DataBaseConnection();
+            
+            pstmt = conn.getConnection().prepareStatement(sql);
+            pstmt.setString(1,s.getID());
+            
+            rs = pstmt.executeQuery();
+            Student s = new Student();
+            while(rs.next()) {
+                s.setID(rs.getSring("id"));
+                s.setName(rs.getSring("name"));
+                list.add(s);
+            }
+            pstmt.close();
+            conn.close();
+            rs.close();
+        } catch(Exception e){}
+        return list;
+    }
+    
+    public Student findByID(Long id) {
+        String sql = "select * from Student where ID=?";
+        List<Student> list = null;
+        PreparedStatement pstmt = null;
+        DataBaseConnection conn = null;
+        ResultSet rs = null;
+        try{
+            conn = new DataBaseConnection();
+            
+            pstmt = conn.getConnection().prepareStatement(sql);
+            pstmt.setString(1,s.getID());
+            pstmt.setString(2,id);
+            
+            rs = pstmt.executeQuery();
+            Student s = new Student();
+            while(rs.next()) {
+                s.setID(rs.getSring("id"));
+                s.setName(rs.getSring("name"));
+                list.add(s);
+            }
+            pstmt.close();
+            conn.close();
+            rs.close();
+        } catch(Exception e){}
         return list.get(0);
     }
 
-    @Override
-    public List<Student> getAll() {
-        String sql = "select * from Student where ID=?";
-        List<Student> list = jdbcTemplate.query(sql,new StudentMapper());
-        return list;
-    }
 }
