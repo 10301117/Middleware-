@@ -1,4 +1,5 @@
 package daoIMP;
+
 import bean.Student;
 import dao.StudentDAO;
 import java.sql.*;
@@ -6,7 +7,7 @@ import java.sql.*;
 import connection.DataBaseConnection;
 
 public class StudentDAOIMP implements StudentDAO{
-	
+    // 添加操作
     public void insert(Student s){
         String sql = "INSERT INTO student (id, name) values (?,?)";
         PreparedStatement pstmt = null;
